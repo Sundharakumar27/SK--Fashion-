@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sk Fashion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        body {
+           font-family: Arial, sans-serif;
+           background-image: url('https://via.placeholder.com/1920x1080'); 
+           background-size: cover;
+           background-position: center;
+           background-repeat: no-repeat;
+}
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .product-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .product-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .product-item h3 {
+            margin: 10px 0;
+        }
+        .product-item p {
+            font-size: 1.1em;
+            color: #333;
+        }
+        .product-item select, .product-item input {
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .product-item button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .product-item button:hover {
+            background-color: #45a049;
+        }
+        .cart {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .cart h2 {
+            margin: 0 0 15px 0;
+        }
+        .cart ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .cart ul li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+        }
+        .cart ul li:last-child {
+            border-bottom: none;
+        }
+        .cart .total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .cart button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .cart button:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Sk Fashion</h1>
+</header>
+<div class="container">
+    <div class="product-list" id="product-list">
+        <!-- Products will be dynamically added here -->
+    </div>
+
+    <div class="cart" id="cart">
+        <h2>Your Shopping Cart</h2>
+        <ul id="cart-items">
+            <li>Your cart is empty.</li>
+        </ul>
+        <div class="total" id="total-price">Total: ₹0.00</div>
+        <button onclick="checkout()">Proceed to Checkout</button>
+        <button id="placeOrderButton" style="display:none;" onclick="placeOrder()">Place Order</button>
+    </div>
+</div>
+
+<script>
+    const conversionRate = 74;
+
+    const products = [
+    {
+        "name": "Red Evening Dress",
+        "price": 30 * conversionRate,
+        "image": "images/photo1.jpeg",
+        "sizes": ["S", "M", "L", "XL"]
+    },
+    {
+        "name": "Blue Summer Dress",
+        "price": 40 * conversionRate,
+        "image": "images/photo2.jpeg",
+        "sizes": ["S", "M", "L"]
+    },
+    {
+        "name": "Black Formal Dress",
+        "price": 70 * conversionRate,
+        "image": "images/photo3.jpeg",
+        "sizes": ["M", "L", "XL"]
+    },
+    {
+        "name": "Floral Maxi Dress",
+        "price": 45 * conversionRate,
+        "image": "images/photo4.jpeg",
+        "sizes": ["S", "M", "L", "XL"]
+    },
+    {
+        "name": "Strapless Red Dress",
+        "price": 61 * conversionRate,
+        "image": "images/photo5.jpeg",
+        "sizes": ["M", "L"]
+    },
+    {
+        "name": "Denim Dress",
+        "price": 40 * conversionRate,
+        "image": "images/photo6.jpeg",
+        "sizes": ["S", "M", "L", "XL"]
+    },
+    {
+        "name": "Black Leather Dress",
+        "price": 32 * conversionRate,
+        "image": "images/photo7.jpeg",
+        "sizes": ["M", "L"]
+    },
+    {
+        "name": "Casual T-shirt Dress",
+        "price": 25 * conversionRate,
+        "image": "images/photo8.jpeg",
+        "sizes": ["S", "M", "L"]
+    },
+    {
+        "name": "Golden Party Dress",
+        "price": 73 * conversionRate,
+        "image": "images/photo9.jpeg",
+        "sizes": ["S", "M", "L"]
+    }
+];
+    let cart = [];
+
+    function renderProducts() {
+        const productList = document.getElementById("product-list");
+
+        products.forEach((product, index) => {
+            const productDiv = document.createElement("div");
+            productDiv.classList.add("product-item");
+
+            productDiv.innerHTML = `
+                <img src="${product.image}" alt="${product.name}">
+                <h3>${product.name}</h3>
+                <p>₹${product.price.toFixed(2)}</p>
+                <select id="size-${index}">
+                    ${product.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
+                </select>
+                <input type="number" id="quantity-${index}" min="1" value="1">
+                <button onclick="addToCart(${index})">Add to Cart</button>
+            `;
+
+            productList.appendChild(productDiv);
+        });
+    }
+
+    function addToCart(index) {
+        const size = document.getElementById(`size-${index}`).value;
+        const quantity = document.getElementById(`quantity-${index}`).value;
+
+        const product = products[index];
+        const cartItem = {
+            name: product.name,
+            price: product.price,
+            size: size,
+            quantity: parseInt(quantity)
+        };
+
+        cart.push(cartItem);
+        renderCart();
+    }
+
+    function renderCart() {
+        const cartItems = document.getElementById("cart-items");
+        const totalPriceElement = document.getElementById("total-price");
+
+        cartItems.innerHTML = '';
+        let total = 0;
+
+        if (cart.length === 0) {
+            cartItems.innerHTML = '<li>Your cart is empty.</li>';
+            totalPriceElement.textContent = 'Total: ₹0.00';
+            document.getElementById("placeOrderButton").style.display = 'none';
+        } else {
+            cart.forEach(item => {
+                const cartItemElement = document.createElement("li");
+                cartItemElement.textContent = `${item.name} (Size: ${item.size}) x ${item.quantity} - ₹${(item.price * item.quantity).toFixed(2)}`;
+                cartItems.appendChild(cartItemElement);
+                total += item.price * item.quantity;
+            });
+            totalPriceElement.textContent = `Total: ₹${total.toFixed(2)}`;
+            document.getElementById("placeOrderButton").style.display = 'block';
+        }
+    }
+
+    function checkout() {
+        if (cart.length === 0) {
+            alert("Your cart is empty! Please add items to your cart before proceeding.");
+        } else {
+            alert("Proceeding to checkout...");
+            // Additional logic can be added here for handling checkout process
+        }
+    }
+
+    function placeOrder() {
+        if (cart.length > 0) {
+            alert("Thank you! Your order has been successfully placed.");
+            cart = [];
+            renderCart();
+        } else {
+            alert("Your cart is empty. Add items to your cart to place an order.");
+        }
+    }
+
+    renderProducts();
+</script>
+
+</body>
+</html>
